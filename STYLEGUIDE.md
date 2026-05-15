@@ -1,113 +1,109 @@
-# Guía de Estilo
-__Filosofía General__
+# 🎨 Guía de Estilo
 
-> [!NOTE]
-> El código debe ser:
-> legible,
-> explícito,
-> consistente,
-> mantenible.
+---
 
-## Convenciones de Nombres
+# ✨ Filosofía General
 
-### __Utiliza PascalCase:__
+El código debe ser:
 
+* legible,
+* explícito,
+* consistente,
+* mantenible.
+
+---
+
+# 🏷️ Convenciones de Nombres
+
+## Clases
+
+Usa PascalCase:
+
+```java
 PlayerEntity
 WorldRenderer
 InventorySystem
+```
 
-## Métodos y Variables
+---
 
-### __Utiliza camelCase:__
+## Variables y métodos
 
+Usa camelCase:
+
+```java
 loadWorld()
 renderPlayer()
 currentHealth
+```
+
+---
 
 ## Constantes
 
-### __Utiliza UPPERCASE:__
+Usa UPPER_CASE:
 
+```java
 MAX_HEALTH
 TILE_SIZE
+```
 
-## Diseño de Clases
-### __Mantén las clases enfocadas__
+---
 
-Cada clase debe tener una única responsabilidad clara.
+# 🧱 Diseño de Clases
 
-Evita clases gigantes multifunción.
+Cada clase debe tener:
 
-## Métodos
+✅ Una única responsabilidad.
 
-> [!TIP] 
-> Preferimos:
-> métodos cortos,
-> nombres descriptivos,
-> comportamiento explícito.
+Evita:
 
-> [!CAUTION]
-> Evita:
-> efectos secundarios ocultos,
-> métodos excesivamente largos.
+❌ Clases monstruo.
 
-## Comentarios
+---
 
-### __Comenta:__
+# 🧠 Métodos
 
-POR QUÉ existe algo,
-no QUÉ hace código obvio.
+Preferimos:
 
-> [!CAUTION]
-> Incorrecto:
-> // incrementa x
-> x++;
+* métodos pequeños,
+* nombres descriptivos,
+* comportamiento claro.
 
-> [!NOTE]
-> Correcto:
-> // Ajuste necesario para compensar alineación del sprite
-> x++;
+---
 
+# 💬 Comentarios
 
-## Magic Numbers
+Comenta:
 
-### __Evita valores hardcodeados.__
+> POR QUÉ existe algo.
 
-> [!TIP]
-> Utiliza:
-> constantes,
-> configuraciones,
->enums.
+No:
 
-## Formateo
+> QUÉ hace código obvio.
 
-> [!TIP]
-> Mantén:
-> indentación consistente,
-> espacios lógicos,
-> saltos de línea legibles.
+---
 
-## Principios de Clean Code
+# 🔢 Magic Numbers
 
-> [!NOTE]
-> Preferimos:
-> composición,
-> nombres claros,
-> modularidad,
-> dependencias explícitas.
+Evita valores hardcodeados.
 
-> [!CAUTION]
-> Evita:
-> abstracciones innecesarias,
-> optimización prematura,
-> herencia profunda.
+Usa:
 
-## Enfoque Educativo
+* constantes,
+* configuraciones,
+* enums.
 
-## __Este repositorio también es educativo.__
+---
 
-> [!IMPORTANT]
-> Escribe código que:
-> principiantes puedan leer,
-> contribuidores puedan entender,
-> futuros maintainers puedan mantener.
+# 📚 Enfoque Educativo
+
+Este proyecto también busca enseñar.
+
+Escribe código que:
+
+* principiantes puedan entender,
+* contribuidores puedan mantener,
+* la comunidad pueda aprender.
+
+---
