@@ -7,7 +7,12 @@
 # 🌍 ¿Qué es HollowForge?
 
 HollowForge es un videojuego RPG sandbox 2D inspirado en experiencias como
-entity["video_game","Terraria","Action-adventure sandbox game by Re-Logic"], pero construido desde cero con un enfoque:
+
+"video_game",
+"Terraria",
+"Action-adventure sandbox game by Re-Logic, 
+
+pero construido desde cero con un enfoque:
 
 * educativo,
 * colaborativo,
