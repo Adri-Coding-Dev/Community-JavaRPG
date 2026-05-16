@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import dev.hollowforge.util.FontLoader;
 
 public class MainMenuView {
@@ -46,12 +45,6 @@ public class MainMenuView {
                 AppConstants.OPTIONS_TEXT,
                 AppConstants.BUTTON_NEW_GAME_IMAGE
         );
-        Button btnRepositorio = UIButtonFactory.createButtonWithCenteredText(
-                AppConstants.NEW_GAME_BUTTON_WIDTH,
-                AppConstants.NEW_GAME_BUTTON_HEIGHT,
-                AppConstants.REPOSITORY_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE
-        );
         Button btnContribuidores = UIButtonFactory.createButtonWithCenteredText(
                 AppConstants.NEW_GAME_BUTTON_WIDTH,
                 AppConstants.NEW_GAME_BUTTON_HEIGHT,
@@ -62,10 +55,9 @@ public class MainMenuView {
         btnNuevaPartida.setOnAction(e -> onNuevaPartida.run());
         btnCargarPartida.setOnAction(e -> System.out.println("Cargar partida - pendiente"));
         btnOpciones.setOnAction(e -> System.out.println("Opciones - pendiente"));
-        btnRepositorio.setOnAction(e -> BrowserUtil.abrirUrl(AppConstants.REPO_URL));
         btnContribuidores.setOnAction(e -> onContribuidores.run());
 
-        VBox mainButtons = new VBox(15, titulo, btnNuevaPartida, btnCargarPartida, btnOpciones, btnRepositorio, btnContribuidores);
+        VBox mainButtons = new VBox(15, titulo, btnNuevaPartida, btnCargarPartida, btnOpciones, btnContribuidores);
         mainButtons.setAlignment(Pos.CENTER);
         mainButtons.setStyle("-fx-background-color: transparent; -fx-padding: 20;");
 

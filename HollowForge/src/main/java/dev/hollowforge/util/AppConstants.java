@@ -12,7 +12,7 @@ public final class AppConstants {
 
     // ========== RUTAS DE RECURSOS ==========
     public static final String FONTS_DIR = "/fonts/";
-    public static final String FONT_MINECRAFT = FONTS_DIR + "MinecraftRegular.otf"; // o .ttf
+    public static final String FONT_MINECRAFT = FONTS_DIR + "HollowForgeMinecraftRegular.otf"; // o .ttf
 
     public static final String VIDEOS_DIR = "/videos/";
     public static final String VIDEO_BACKGROUND = VIDEOS_DIR + "background.mp4";
