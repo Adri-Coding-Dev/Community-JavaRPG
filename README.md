@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/assets/HollowForgeTitle.png" width="400"></p>
+<p align="center"><img src="docs/assets/HollowForgeTitle.png" width="200"></p>
 
 > RPG 2D Pixel Art open source desarrollado colaborativamente con JavaFX.
 
