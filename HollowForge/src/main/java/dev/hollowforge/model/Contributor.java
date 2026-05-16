@@ -10,11 +10,13 @@ public class Contributor {
     private final String nombre;
     private final String avatarUrl;
     private final String htmlUrl;
+    private final int contribuciones;
 
-    public Contributor(String nombre, String avatarUrl, String htmlUrl) {
+    public Contributor(String nombre, String avatarUrl, String htmlUrl, int contribuciones) {
         this.nombre = nombre;
         this.avatarUrl = avatarUrl;
         this.htmlUrl = htmlUrl;
+        this.contribuciones = contribuciones;
     }
 
     public String getNombre() {
@@ -27,6 +29,10 @@ public class Contributor {
 
     public String getHtmlUrl() {
         return htmlUrl;
+    }
+
+    public int getContribuciones(){
+        return contribuciones;
     }
 
     @Override
@@ -44,6 +50,6 @@ public class Contributor {
 
     @Override
     public String toString() {
-        return nombre;
+        return nombre + "(" + contribuciones + " contribuciones al proyecto)";
     }
 }

@@ -20,7 +20,7 @@ public class GitHubService {
             "https://api.github.com/repos/Adri-Coding-Dev/Community-JavaRPG/contributors";
 
     /**
-     * Obtiene la lista de contribuidores del repositorio oficial.
+     * Obtiene la lista completa de contribuidores (se espera una sola página).
      *
      * @return lista de {@link Contributor}
      * @throws Exception si la petición falla o el JSON es inválido
@@ -47,7 +47,8 @@ public class GitHubService {
             String login = obj.getString("login");
             String avatarUrl = obj.getString("avatar_url");
             String htmlUrl = obj.getString("html_url");
-            contributors.add(new Contributor(login, avatarUrl, htmlUrl));
+            int contributions = obj.getInt("contributions");
+            contributors.add(new Contributor(login, avatarUrl, htmlUrl, contributions));
         }
 
         return contributors;
