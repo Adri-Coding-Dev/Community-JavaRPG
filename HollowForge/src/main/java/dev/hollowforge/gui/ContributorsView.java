@@ -5,27 +5,33 @@ import dev.hollowforge.service.GitHubService;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 import java.util.List;
 
 /**
- * Vista que muestra los contribuidores oficiales.
+ * Vista que muestra los contribuidores oficiales con tarjetas atractivas
+ * y carga progresiva para evitar bloqueos en la interfaz.
  */
 public class ContributorsView {
 
     private final VBox root;
-    private final VBox listaContainer; // se llena asíncronamente
+    private final VBox tarjetasContainer; // Se llenará progresivamente
     private final HostServices hostServices;
     private final GitHubService gitHubService;
+    private final ProgressIndicator progressIndicator;
+
+    private static final int TARJETA_ANCHO_MAX = 350;
+    private static final int AVATAR_TAMANO = 64;
 
     public ContributorsView(HostServices hostServices,
                             GitHubService gitHubService,
@@ -33,87 +39,170 @@ public class ContributorsView {
         this.hostServices = hostServices;
         this.gitHubService = gitHubService;
 
-        Label titulo = new Label("Contribuidores Oficiales");
-        titulo.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        // Título
+        Label titulo = new Label("🌟 Contribuidores Oficiales");
+        titulo.setFont(Font.font("System", FontWeight.BOLD, 24));
+        titulo.setTextFill(Color.WHITE);
 
+        // Botón volver
         Button btnVolver = new Button("← Volver al menú");
+        btnVolver.setStyle("-fx-background-color: #555; -fx-text-fill: white;");
         btnVolver.setOnAction(e -> onVolver.run());
 
-        listaContainer = new VBox(10);
-        listaContainer.setAlignment(Pos.CENTER_LEFT);
+        // Contenedor de tarjetas con ScrollPane
+        tarjetasContainer = new VBox(15);
+        tarjetasContainer.setAlignment(Pos.TOP_CENTER);
+        tarjetasContainer.setPadding(new Insets(10));
 
-        // Indicador de carga inicial
-        ProgressIndicator progress = new ProgressIndicator();
-        progress.setMaxSize(32, 32);
-        listaContainer.getChildren().add(progress);
+        ScrollPane scrollPane = new ScrollPane(tarjetasContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #2b2b2b; -fx-background-color: #2b2b2b;");
 
-        // Cargar datos en segundo plano
-        cargarContribuidoresAsync();
+        // Indicador de progreso
+        progressIndicator = new ProgressIndicator();
+        progressIndicator.setMaxSize(40, 40);
+        progressIndicator.setVisible(false);
 
-        root = new VBox(15, titulo, listaContainer, btnVolver);
+        // Organización principal
+        VBox topBar = new VBox(10, titulo, progressIndicator);
+        topBar.setAlignment(Pos.CENTER);
+        topBar.setPadding(new Insets(10));
+
+        root = new VBox(10, topBar, scrollPane, btnVolver);
         root.setAlignment(Pos.TOP_CENTER);
-        root.setStyle("-fx-padding: 20;");
+        root.setPadding(new Insets(15));
+        root.setStyle("-fx-background-color: #1e1e1e;");
+
+        // Iniciar carga progresiva
+        iniciarCargaProgresiva();
     }
 
     public Parent getRoot() {
         return root;
     }
 
-    private void cargarContribuidoresAsync() {
-        Task<List<Contributor>> task = new Task<>() {
+    /**
+     * Lanza un hilo que obtiene la lista completa y luego,
+     * mediante Platform.runLater con pequeños retardos,
+     * va añadiendo tarjetas una a una para simular carga progresiva fluida.
+     */
+    private void iniciarCargaProgresiva() {
+        progressIndicator.setVisible(true);
+
+        Task<List<Contributor>> fetchTask = new Task<>() {
             @Override
             protected List<Contributor> call() throws Exception {
                 return gitHubService.obtenerContribuidores();
             }
         };
 
-        task.setOnSucceeded(e -> Platform.runLater(() -> mostrarLista(task.getValue())));
-        task.setOnFailed(e -> Platform.runLater(() -> {
-            listaContainer.getChildren().clear();
-            listaContainer.getChildren().add(
-                    new Label("Error al cargar: " + task.getException().getMessage())
-            );
-        }));
+        fetchTask.setOnSucceeded(event -> {
+            List<Contributor> contributors = fetchTask.getValue();
+            Platform.runLater(() -> progressIndicator.setVisible(false));
+            mostrarProgresivamente(contributors, 0);
+        });
 
-        new Thread(task).start();
+        fetchTask.setOnFailed(event -> {
+            Platform.runLater(() -> {
+                progressIndicator.setVisible(false);
+                tarjetasContainer.getChildren().add(
+                        new Label("❌ Error al cargar: " + fetchTask.getException().getMessage())
+                );
+            });
+        });
+
+        new Thread(fetchTask).start();
     }
 
-    private void mostrarLista(List<Contributor> contribuidores) {
-        listaContainer.getChildren().clear();
-
-        if (contribuidores.isEmpty()) {
-            listaContainer.getChildren().add(new Label("No se encontraron contribuidores."));
-            return;
+    /**
+     * Muestra los contribuidores uno a uno con un retardo entre cada uno.
+     *
+     * @param contributors lista completa
+     * @param indice       posición actual a mostrar
+     */
+    private void mostrarProgresivamente(List<Contributor> contributors, int indice) {
+        if (indice >= contributors.size()) {
+            return; // Fin de la lista
         }
 
-        for (Contributor c : contribuidores) {
-            HBox fila = new HBox(10);
-            fila.setAlignment(Pos.CENTER_LEFT);
-            fila.setStyle("-fx-cursor: hand;");
+        Contributor c = contributors.get(indice);
+        tarjetasContainer.getChildren().add(crearTarjeta(c));
 
-            ImageView avatar = new ImageView();
-            avatar.setFitWidth(32);
-            avatar.setFitHeight(32);
+        // Programar el siguiente con un pequeño retardo (80 ms)
+        new Thread(() -> {
             try {
-                avatar.setImage(new Image(c.getAvatarUrl(), true));
-            } catch (Exception ignored) {}
+                Thread.sleep(80);
+            } catch (InterruptedException ignored) {}
+            Platform.runLater(() -> mostrarProgresivamente(contributors, indice + 1));
+        }).start();
+    }
 
-            Label nombre = new Label(c.getNombre());
+    /**
+     * Construye una tarjeta visual para un contribuidor.
+     */
+    private VBox crearTarjeta(Contributor c) {
+        VBox tarjeta = new VBox(10);
+        tarjeta.setAlignment(Pos.CENTER);
+        tarjeta.setPadding(new Insets(15));
+        tarjeta.setMaxWidth(TARJETA_ANCHO_MAX);
+        tarjeta.setStyle(
+                "-fx-background-color: #333; " +
+                        "-fx-background-radius: 12; " +
+                        "-fx-border-radius: 12; " +
+                        "-fx-border-color: #555; " +
+                        "-fx-border-width: 1; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0.2, 2, 2);"
+        );
 
-            fila.getChildren().addAll(avatar, nombre);
-            fila.setOnMouseClicked(event -> abrirPerfil(c.getHtmlUrl()));
-
-            listaContainer.getChildren().add(fila);
+        // Avatar
+        ImageView avatarView = new ImageView();
+        avatarView.setFitWidth(AVATAR_TAMANO);
+        avatarView.setFitHeight(AVATAR_TAMANO);
+        avatarView.setPreserveRatio(true);
+        try {
+            Image img = new Image(c.getAvatarUrl(), true);
+            avatarView.setImage(img);
+        } catch (Exception e) {
+            // Si falla, se queda el placeholder vacío
         }
+        // Hacer el avatar circular con clip
+        avatarView.setClip(new javafx.scene.shape.Circle(
+                AVATAR_TAMANO / 2.0, AVATAR_TAMANO / 2.0, AVATAR_TAMANO / 2.0));
+
+        // Nombre
+        Label nombreLabel = new Label(c.getNombre());
+        nombreLabel.setFont(Font.font("System", FontWeight.BOLD, 18));
+        nombreLabel.setTextFill(Color.WHITE);
+
+        // Contribuciones
+        Label contribLabel = new Label("🏆 " + c.getContribuciones() + " contribuciones");
+        contribLabel.setFont(Font.font("System", 14));
+        contribLabel.setTextFill(Color.LIGHTGRAY);
+
+        // Botón para ver perfil
+        Button btnPerfil = new Button("🔗 Ver perfil");
+        btnPerfil.setStyle(
+                "-fx-background-color: #0a66c2; -fx-text-fill: white; " +
+                        "-fx-background-radius: 5; -fx-cursor: hand;");
+        btnPerfil.setOnAction(e -> abrirPerfil(c.getHtmlUrl()));
+
+        tarjeta.getChildren().addAll(avatarView, nombreLabel, contribLabel, btnPerfil);
+
+        // Efecto hover para toda la tarjeta
+        tarjeta.setOnMouseEntered(e ->
+                tarjeta.setStyle(tarjeta.getStyle() + "-fx-background-color: #444;"));
+        tarjeta.setOnMouseExited(e ->
+                tarjeta.setStyle(tarjeta.getStyle().replace("-fx-background-color: #444;",
+                        "-fx-background-color: #333;")));
+
+        return tarjeta;
     }
 
     private void abrirPerfil(String url) {
         if (hostServices != null) {
             hostServices.showDocument(url);
         } else {
-            // Fallback mínimo
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.INFORMATION);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Perfil");
             alert.setHeaderText(null);
             alert.setContentText(url);

@@ -77,6 +77,11 @@ modding/
 
 Las entidades deben ser ligeras.
 
+> Siguiendo el modelo de POO/ECS (MODO BETA)
+
+La idea es crear entidades genericas que sirvan como "molde" para construir
+el resto de modelos
+
 El comportamiento debe delegarse en:
 
 * sistemas,
