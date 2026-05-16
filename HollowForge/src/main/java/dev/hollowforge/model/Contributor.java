@@ -1,9 +1,11 @@
+// Fichero: Contributor.java
 package dev.hollowforge.model;
 
 import java.util.Objects;
 
 /**
  * Representa un contribuidor de GitHub con sus datos básicos.
+ * Es un modelo de datos inmutable (sus campos son finales).
  */
 public class Contributor {
 
@@ -12,6 +14,14 @@ public class Contributor {
     private final String htmlUrl;
     private final int contribuciones;
 
+    /**
+     * Constructor.
+     *
+     * @param nombre         nombre de usuario en GitHub (login)
+     * @param avatarUrl      URL de la imagen de avatar
+     * @param htmlUrl        URL del perfil en GitHub
+     * @param contribuciones número de contribuciones al repositorio
+     */
     public Contributor(String nombre, String avatarUrl, String htmlUrl, int contribuciones) {
         this.nombre = nombre;
         this.avatarUrl = avatarUrl;
@@ -19,6 +29,7 @@ public class Contributor {
         this.contribuciones = contribuciones;
     }
 
+    // Getters (no hay setters porque el objeto es inmutable)
     public String getNombre() {
         return nombre;
     }
@@ -35,6 +46,13 @@ public class Contributor {
         return contribuciones;
     }
 
+    /**
+     * Dos contribuidores se consideran iguales si tienen el mismo nombre (login).
+     * Esto es útil para evitar duplicados en colecciones.
+     *
+     * @param o objeto a comparar
+     * @return true si son iguales según el nombre
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

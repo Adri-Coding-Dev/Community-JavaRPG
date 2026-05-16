@@ -50,6 +50,19 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
+
+        <!-- Libreria para cargar videos (para el fondo de la ventana de inicio -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>25</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>25</version>
+        </dependency>
     </dependencies>
 
     <!-- Configuración de construcción -->

@@ -10,30 +10,30 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-/**
- * Servicio para interactuar con la API de GitHub.
- */
 public class GitHubService {
 
     private static final String API_URL_CONTRIBUTORS =
             "https://api.github.com/repos/Adri-Coding-Dev/Community-JavaRPG/contributors";
 
-    /**
-     * Obtiene la lista completa de contribuidores (se espera una sola página).
-     *
-     * @return lista de {@link Contributor}
-     * @throws Exception si la petición falla o el JSON es inválido
-     */
+    private final HttpClient httpClient;
+
+    public GitHubService() {
+        // Usamos un pool de hilos para las peticiones asíncronas (aunque aquí se usa send síncrono)
+        ExecutorService executor = Executors.newCachedThreadPool();
+        this.httpClient = HttpClient.newBuilder().executor(executor).build();
+    }
+
     public List<Contributor> obtenerContribuidores() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL_CONTRIBUTORS))
                 .header("Accept", "application/vnd.github.v3+json")
                 .GET()
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
             throw new RuntimeException("GitHub respondió con código: " + response.statusCode());

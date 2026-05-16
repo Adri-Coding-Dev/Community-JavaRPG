@@ -1,0 +1,130 @@
+package dev.hollowforge.gui.components;
+
+import dev.hollowforge.util.FontLoader;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import java.io.InputStream;
+
+public class UIButtonFactory {
+
+    // Tamaños de fuente predefinidos
+    private static final double FONT_SIZE_LARGE = 20;
+    private static final double FONT_SIZE_SMALL = 14;
+
+    public static Button createButtonWithCenteredText(double prefWidth, double prefHeight, String text, String imagePath) {
+        Button button = new Button();
+        button.setPrefWidth(prefWidth);
+        button.setPrefHeight(prefHeight);
+
+        if (imagePath == null || imagePath.isEmpty()) {
+            button.setText(text);
+            button.setFont(FontLoader.getMinecraftFont(FONT_SIZE_SMALL));
+            button.setStyle("-fx-text-fill: white; -fx-background-color: #4a4a4a; -fx-background-radius: 5;");
+            return button;
+        }
+
+        try (InputStream is = UIButtonFactory.class.getResourceAsStream(imagePath)) {
+            if (is == null) {
+                System.err.println("[ERROR] No se encontró la imagen: " + imagePath);
+                button.setText(text);
+                button.setFont(FontLoader.getMinecraftFont(FONT_SIZE_SMALL));
+                button.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white;");
+                return button;
+            }
+            Image image = new Image(is);
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(prefWidth);
+            imageView.setFitHeight(prefHeight);
+            imageView.setPreserveRatio(false);
+
+            Label textLabel = new Label(text);
+            textLabel.setWrapText(true);
+            textLabel.setAlignment(Pos.CENTER);
+            textLabel.setMaxWidth(prefWidth * 0.8);
+            textLabel.setFont(FontLoader.getMinecraftFont(FONT_SIZE_LARGE));
+            textLabel.setStyle("-fx-text-fill: white;");
+
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().addAll(imageView, textLabel);
+            stackPane.setPrefSize(prefWidth, prefHeight);
+
+            button.setGraphic(stackPane);
+            button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            button.setStyle("-fx-background-color: transparent;");
+        } catch (Exception e) {
+            e.printStackTrace();
+            button.setText(text);
+            button.setFont(FontLoader.getMinecraftFont(FONT_SIZE_SMALL));
+            button.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white;");
+        }
+        return button;
+    }
+
+    public static Button createButton(double prefWidth, double prefHeight, String text, String unused) {
+        Button button = new Button(text);
+        button.setPrefWidth(prefWidth);
+        button.setPrefHeight(prefHeight);
+        button.setFont(FontLoader.getMinecraftFont(FONT_SIZE_SMALL));
+        button.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-background-radius: 5;");
+        return button;
+    }
+
+    public static Button createImageButton(double width, double height, String imagePath, String tooltipText) {
+        Button button = new Button();
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+
+        try (InputStream is = UIButtonFactory.class.getResourceAsStream(imagePath)) {
+            if (is == null) {
+                System.err.println("No se encontró la imagen: " + imagePath);
+                button.setStyle("-fx-background-color: #4a4a4a; -fx-background-radius: 10;");
+                return button;
+            }
+            Image image = new Image(is);
+            ImageView imageView = new ImageView(image);
+
+            // Cálculo de viewPort para cubrir el área sin deformar
+            double imgWidth = image.getWidth();
+            double imgHeight = image.getHeight();
+            double targetWidth = width;
+            double targetHeight = height;
+            double scaleW = targetWidth / imgWidth;
+            double scaleH = targetHeight / imgHeight;
+            double scale = Math.max(scaleW, scaleH);
+            double scaledW = imgWidth * scale;
+            double scaledH = imgHeight * scale;
+            double viewX = (scaledW - targetWidth) / 2 / scale;
+            double viewY = (scaledH - targetHeight) / 2 / scale;
+            imageView.setViewport(new javafx.geometry.Rectangle2D(viewX, viewY, targetWidth / scale, targetHeight / scale));
+            imageView.setFitWidth(targetWidth);
+            imageView.setFitHeight(targetHeight);
+
+            button.setGraphic(imageView);
+            button.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+            if (tooltipText != null) {
+                Tooltip.install(button, new Tooltip(tooltipText));
+            }
+
+            // Efecto hover
+            button.setOnMouseEntered(e -> {
+                button.setScaleX(1.1);
+                button.setScaleY(1.1);
+            });
+            button.setOnMouseExited(e -> {
+                button.setScaleX(1.0);
+                button.setScaleY(1.0);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            button.setStyle("-fx-background-color: #4a4a4a;");
+        }
+        return button;
+    }
+}
