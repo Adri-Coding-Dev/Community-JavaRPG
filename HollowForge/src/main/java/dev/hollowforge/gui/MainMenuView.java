@@ -4,106 +4,161 @@ import dev.hollowforge.gui.components.UIButtonFactory;
 import dev.hollowforge.gui.components.VideoBackground;
 import dev.hollowforge.util.AppConstants;
 import dev.hollowforge.util.BrowserUtil;
+import dev.hollowforge.util.FontLoader;
 import javafx.application.HostServices;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import dev.hollowforge.util.FontLoader;
 
+/**
+ * Menú principal con botones de navegación y redes sociales.
+ * Los botones de redes sociales tienen un cartel informativo permanente debajo.
+ */
 public class MainMenuView {
 
     private final StackPane root;
 
+    // Altura del espaciador superior para bajar los botones (ajustar según gusto)
+    private static final double PREF_SPACER_HEIGHT = 350;
+
     public MainMenuView(HostServices hostServices, Runnable onNuevaPartida, Runnable onContribuidores) {
-        // En el constructor de MainMenuView, reemplaza la línea que crea el fondo:
-        VideoBackground videoBackground = new VideoBackground(AppConstants.VIDEO_BACKGROUND,0);
-
-        Button btnNuevaPartida = UIButtonFactory.createButtonWithCenteredText(
-                AppConstants.NEW_GAME_BUTTON_WIDTH,
-                AppConstants.NEW_GAME_BUTTON_HEIGHT,
-                AppConstants.NEW_GAME_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE,
-                false
-        );
-        Button btnCargarPartida = UIButtonFactory.createButtonWithCenteredText(
-                AppConstants.NEW_GAME_BUTTON_WIDTH,
-                AppConstants.NEW_GAME_BUTTON_HEIGHT,
-                AppConstants.LOAD_GAME_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE,
-                false
-        );
-        Button btnOpciones = UIButtonFactory.createButtonWithCenteredText(
-                AppConstants.NEW_GAME_BUTTON_WIDTH,
-                AppConstants.NEW_GAME_BUTTON_HEIGHT,
-                AppConstants.OPTIONS_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE,
-                false
-        );
-        Button btnContribuidores = UIButtonFactory.createButtonWithCenteredText(
-                AppConstants.NEW_GAME_BUTTON_WIDTH,
-                AppConstants.NEW_GAME_BUTTON_HEIGHT,
-                AppConstants.CONTRIBUTORS_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE,
-                true
-        );
-
-        btnNuevaPartida.setOnAction(e -> onNuevaPartida.run());
-        btnCargarPartida.setOnAction(e -> System.out.println("Cargar partida - pendiente"));
-        btnOpciones.setOnAction(e -> System.out.println("Opciones - pendiente"));
-        btnContribuidores.setOnAction(e -> onContribuidores.run());
-
-        VBox mainButtons = new VBox(15);
-        mainButtons.setAlignment(Pos.CENTER);
-        mainButtons.setStyle("-fx-background-color: transparent; -fx-padding: 20;");
-
-        Region spacer = new Region();
-        spacer.setPrefHeight(400); // Ajusta la altura según necesites
-
-        mainButtons.getChildren().addAll(spacer, btnNuevaPartida, btnCargarPartida, btnOpciones, btnContribuidores);
-
-        Button btnDiscord = UIButtonFactory.createImageButton(
-                AppConstants.SOCIAL_BUTTON_SIZE,
-                AppConstants.SOCIAL_BUTTON_SIZE,
-                AppConstants.DISCORD_ICON,
-                "Únete a Discord",
-                true
-        );
-        Button btnTwitter = UIButtonFactory.createImageButton(
-                AppConstants.SOCIAL_BUTTON_SIZE,
-                AppConstants.SOCIAL_BUTTON_SIZE,
-                AppConstants.YOUTUBE_ICON,
-                "Síguenos en Youtube",
-                true
-        );
-        Button btnGitHub = UIButtonFactory.createImageButton(
-                AppConstants.SOCIAL_BUTTON_SIZE,
-                AppConstants.SOCIAL_BUTTON_SIZE,
-                AppConstants.GITHUB_ICON,
-                "GitHub del proyecto",
-                true
-        );
-
-        btnDiscord.setOnAction(e -> BrowserUtil.abrirUrl(AppConstants.DISCORD_INVITE_URL));
-        btnTwitter.setOnAction(e -> BrowserUtil.abrirUrl(AppConstants.YOUTUBE_URL));
-        btnGitHub.setOnAction(e -> BrowserUtil.abrirUrl(AppConstants.GITHUB_PROJECT_URL));
-
-        HBox socialBox = new HBox(20, btnDiscord, btnTwitter, btnGitHub);
-        socialBox.setAlignment(Pos.CENTER);
-        socialBox.setStyle("-fx-padding: 10 0 20 0;");
-
-        VBox uiContainer = new VBox(20, mainButtons, socialBox);
-        uiContainer.setAlignment(Pos.CENTER);
-        uiContainer.setStyle("-fx-background-color: transparent;");
-
         root = new StackPane();
-        root.getChildren().addAll(videoBackground, uiContainer);
-        StackPane.setAlignment(uiContainer, Pos.CENTER);
+
+        try {
+            // Fondo de vídeo (con fallback interno)
+            VideoBackground videoBackground = new VideoBackground(AppConstants.VIDEO_BACKGROUND, 0);
+            // Botones principales
+            Button btnNuevaPartida = UIButtonFactory.createButtonWithCenteredText(
+                    AppConstants.NEW_GAME_BUTTON_WIDTH,
+                    AppConstants.NEW_GAME_BUTTON_HEIGHT,
+                    AppConstants.NEW_GAME_TEXT,
+                    AppConstants.BUTTON_NEW_GAME_IMAGE,
+                    false
+            );
+            Button btnCargarPartida = UIButtonFactory.createButtonWithCenteredText(
+                    AppConstants.NEW_GAME_BUTTON_WIDTH,
+                    AppConstants.NEW_GAME_BUTTON_HEIGHT,
+                    AppConstants.LOAD_GAME_TEXT,
+                    AppConstants.BUTTON_NEW_GAME_IMAGE,
+                    false
+            );
+            Button btnOpciones = UIButtonFactory.createButtonWithCenteredText(
+                    AppConstants.NEW_GAME_BUTTON_WIDTH,
+                    AppConstants.NEW_GAME_BUTTON_HEIGHT,
+                    AppConstants.OPTIONS_TEXT,
+                    AppConstants.BUTTON_NEW_GAME_IMAGE,
+                    false
+            );
+            Button btnContribuidores = UIButtonFactory.createButtonWithCenteredText(
+                    AppConstants.NEW_GAME_BUTTON_WIDTH,
+                    AppConstants.NEW_GAME_BUTTON_HEIGHT,
+                    AppConstants.CONTRIBUTORS_TEXT,
+                    AppConstants.BUTTON_NEW_GAME_IMAGE,
+                    true
+            );
+
+            btnNuevaPartida.setOnAction(e -> onNuevaPartida.run());
+            btnCargarPartida.setOnAction(e -> System.out.println("Cargar partida - pendiente"));
+            btnOpciones.setOnAction(e -> System.out.println("Opciones - pendiente"));
+            btnContribuidores.setOnAction(e -> onContribuidores.run());
+
+            // Contenedor de botones principales
+            VBox mainButtons = new VBox(15, btnNuevaPartida, btnCargarPartida, btnOpciones, btnContribuidores);
+            mainButtons.setAlignment(Pos.CENTER);
+            mainButtons.setStyle("-fx-background-color: transparent; -fx-padding: 20;");
+
+            // --- Sección de redes sociales con carteles fijos debajo ---
+            HBox socialBox = new HBox(50);
+            socialBox.setAlignment(Pos.CENTER);
+            socialBox.setStyle("-fx-padding: 10 0 20 0;");
+
+            // Cargar imagen del cartel (común para todos)
+            Image cartelImg = null;
+            try {
+                String cartelPath = "/assets/ui/socials/CartelToolTip.png";
+                var is = getClass().getResourceAsStream(cartelPath);
+                if (is != null) {
+                    cartelImg = new Image(is);
+                } else {
+                    System.err.println("Advertencia: No se encontró la imagen del cartel en " + cartelPath);
+                }
+            } catch (Exception e) {
+                System.err.println("Error cargando cartel: " + e.getMessage());
+            }
+
+            // Datos de cada red social: icono, texto, URL
+            Object[][] redes = {
+                    {AppConstants.DISCORD_ICON, "Únete a Discord", AppConstants.DISCORD_INVITE_URL},
+                    {AppConstants.YOUTUBE_ICON, "Síguenos en YouTube", AppConstants.YOUTUBE_URL},
+                    {AppConstants.GITHUB_ICON, "GitHub del proyecto", AppConstants.GITHUB_PROJECT_URL}
+            };
+
+            for (Object[] red : redes) {
+                String icono = (String) red[0];
+                String texto = (String) red[1];
+                String url = (String) red[2];
+
+                Button btn = UIButtonFactory.createImageButton(
+                        AppConstants.SOCIAL_BUTTON_SIZE,
+                        AppConstants.SOCIAL_BUTTON_SIZE,
+                        icono,
+                        null,
+                        true
+                );
+                btn.setOnAction(e -> BrowserUtil.abrirUrl(url));
+
+                StackPane cartel = new StackPane();
+                if (cartelImg != null) {
+                    ImageView cartelBg = new ImageView(cartelImg);
+                    cartelBg.setFitWidth(180);
+                    cartelBg.setPreserveRatio(true);
+                    cartel.getChildren().add(cartelBg);
+                } else {
+                    cartel.setStyle("-fx-background-color: #4a4a4a; -fx-background-radius: 8; -fx-padding: 5;");
+                }
+
+                Label etiqueta = new Label(texto);
+                etiqueta.setFont(FontLoader.getMinecraftFont(12));
+                etiqueta.setTextFill(Color.web("#3B2A1F"));
+                etiqueta.setStyle("-fx-background-color: transparent; -fx-padding: 0 14 20 14;");
+                cartel.getChildren().add(etiqueta);
+                StackPane.setAlignment(etiqueta, Pos.CENTER);
+
+                VBox item = new VBox(10, btn, cartel);
+                item.setAlignment(Pos.CENTER);
+                socialBox.getChildren().add(item);
+            }
+
+            // ---- Espaciador para bajar todos los botones ----
+            Region spacer = new Region();
+            spacer.setPrefHeight(PREF_SPACER_HEIGHT);
+
+            // Contenedor principal con el espaciador arriba
+            VBox uiContainer = new VBox(spacer, mainButtons, socialBox);
+            uiContainer.setAlignment(Pos.TOP_CENTER);
+            uiContainer.setStyle("-fx-background-color: transparent;");
+
+            root.getChildren().addAll(videoBackground, uiContainer);
+            StackPane.setAlignment(uiContainer, Pos.TOP_CENTER); // Anclado arriba para que el espaciador empuje hacia abajo
+
+        } catch (Exception e) {
+            System.err.println("Error en MainMenuView: " + e.getMessage());
+            e.printStackTrace();
+            root.getChildren().clear();
+            root.setStyle("-fx-background-color: black;");
+            Label errorLabel = new Label("Error al cargar el menú.\nReinicia la aplicación.");
+            errorLabel.setTextFill(Color.RED);
+            errorLabel.setFont(FontLoader.getMinecraftFont(20));
+            root.getChildren().add(errorLabel);
+        }
     }
 
     public Parent getRoot() {

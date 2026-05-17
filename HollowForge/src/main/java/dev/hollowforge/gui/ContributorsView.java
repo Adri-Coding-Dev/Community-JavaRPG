@@ -136,8 +136,8 @@ public class ContributorsView {
         root.getChildren().addAll(scrollPane, btnVolver, progressIndicator);
 
         // ---------- Iniciar carga (elegir modo: prueba o real) ----------
-        iniciarCargaPrueba();   // <--- MODO PRUEBA: 50 tarjetas falsas
-        // iniciarCarga();      // <--- MODO REAL: desde GitHub API (descomentar para producción)
+        //iniciarCargaPrueba();   // <--- MODO PRUEBA: 50 tarjetas falsas
+        iniciarCarga();      // <--- MODO REAL: desde GitHub API (descomentar para producción)
     }
 
     // ===================== GENERACIÓN DE DATOS FALSOS (PRUEBA) =====================

@@ -34,6 +34,7 @@ public final class AppConstants {
     public static final double SOCIAL_BUTTON_SIZE = 80; // tamaño en píxeles
     public static final double NEW_GAME_BUTTON_WIDTH = 400;
     public static final double NEW_GAME_BUTTON_HEIGHT = 80;
+    public static final int TITLE_SIZE_GAME = 40;
 
     // ========== TEXTO DE BOTONES (por si se quiere centralizar también) ==========
     public static final String GAME_NAME = "HollowForge";
@@ -42,4 +43,10 @@ public final class AppConstants {
     public static final String OPTIONS_TEXT = "Opciones";
     public static final String REPOSITORY_TEXT = "Repositorio";
     public static final String CONTRIBUTORS_TEXT = "Contribuidores Oficiales";
+
+    public static final String TOOLTIP_GITHUB_TEXT = "Repositorio del Proyecto";
+    public static final String TOOLTIP_DISCORD_TEXT = "Únete a Discord";
+    public static final String TOOLTIP_YOUTUBE_TEXT = "Síguenos en Youtube";
+
+    public static final String TOOLTIP_IMAGE = "/assets/ui/socials/CartelToolTip.png";
 }
