@@ -109,7 +109,7 @@ public class UIButtonFactory {
             Image image = new Image(is);
             ImageView imageView = new ImageView(image);
 
-            // Cálculo de viewPort (igual que tenías)
+            // Cálculo de viewPort
             double imgWidth = image.getWidth();
             double imgHeight = image.getHeight();
             double targetWidth = width;
@@ -150,6 +150,49 @@ public class UIButtonFactory {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
+            button.setStyle("-fx-background-color: #4a4a4a;");
+        }
+        return button;
+    }
+
+
+    public static Button createToolTipButton(double width, double height, String imagePath, String tooltipText){
+        Button button = new Button();
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+
+        try (InputStream is = UIButtonFactory.class.getResourceAsStream(imagePath)) {
+            if (is == null) {
+                System.err.println("No se encontró la imagen: " + imagePath);
+                button.setStyle("-fx-background-color: #4a4a4a; -fx-background-radius: 10;");
+                return button;
+            }
+            Image image = new Image(is);
+            ImageView imageView = new ImageView(image);
+
+            // Cálculo de viewPort
+            double imgWidth = image.getWidth();
+            double imgHeight = image.getHeight();
+            double targetWidth = width;
+            double targetHeight = height;
+            double scaleW = targetWidth / imgWidth;
+            double scaleH = targetHeight / imgHeight;
+            double scale = Math.max(scaleW, scaleH);
+            double scaledW = imgWidth * scale;
+            double scaledH = imgHeight * scale;
+            double viewX = (scaledW - targetWidth) / 2 / scale;
+            double viewY = (scaledH - targetHeight) / 2 / scale;
+            imageView.setViewport(new javafx.geometry.Rectangle2D(viewX, viewY, targetWidth / scale, targetHeight / scale));
+            imageView.setFitWidth(targetWidth);
+            imageView.setFitHeight(targetHeight);
+
+            button.setGraphic(imageView);
+            button.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+            if (tooltipText != null) {
+                Tooltip.install(button, new Tooltip(tooltipText));
+            }
+        }catch (Exception e) {
             e.printStackTrace();
             button.setStyle("-fx-background-color: #4a4a4a;");
         }

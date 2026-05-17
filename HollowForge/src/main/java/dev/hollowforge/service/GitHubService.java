@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class GitHubService {
 
     private static final String API_URL_CONTRIBUTORS =
-            "https://api.github.com/repos/Adri-Coding-Dev/Community-JavaRPG/contributors";
+            "https://api.github.com/repos/Adri-Coding-Dev/Community-JavaRPG/contributors"; // -> Pendiente de arreglar (solo sale una persona)
 
     // Tiempo de vida del caché en milisegundos (5 minutos)
     private static final long CACHE_TTL_MS = 5 * 60 * 1000;
