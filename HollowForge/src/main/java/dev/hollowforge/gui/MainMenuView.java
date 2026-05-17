@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -20,36 +21,36 @@ public class MainMenuView {
     private final StackPane root;
 
     public MainMenuView(HostServices hostServices, Runnable onNuevaPartida, Runnable onContribuidores) {
-        VideoBackground videoBackground = new VideoBackground(AppConstants.VIDEO_BACKGROUND, 15);
-
-        Label titulo = new Label(AppConstants.NEW_GAME_TEXT); // No, mejor usar el título fijo
-        titulo.setText("HollowForge"); // Título fijo, no es una constante externa
-        titulo.setFont(FontLoader.getMinecraftFont(AppConstants.TITLE_FONT_SIZE));
-        titulo.setTextFill(Color.WHITE);
+        // En el constructor de MainMenuView, reemplaza la línea que crea el fondo:
+        VideoBackground videoBackground = new VideoBackground(AppConstants.VIDEO_BACKGROUND,0);
 
         Button btnNuevaPartida = UIButtonFactory.createButtonWithCenteredText(
                 AppConstants.NEW_GAME_BUTTON_WIDTH,
                 AppConstants.NEW_GAME_BUTTON_HEIGHT,
                 AppConstants.NEW_GAME_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE
+                AppConstants.BUTTON_NEW_GAME_IMAGE,
+                false
         );
         Button btnCargarPartida = UIButtonFactory.createButtonWithCenteredText(
                 AppConstants.NEW_GAME_BUTTON_WIDTH,
                 AppConstants.NEW_GAME_BUTTON_HEIGHT,
                 AppConstants.LOAD_GAME_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE
+                AppConstants.BUTTON_NEW_GAME_IMAGE,
+                false
         );
         Button btnOpciones = UIButtonFactory.createButtonWithCenteredText(
                 AppConstants.NEW_GAME_BUTTON_WIDTH,
                 AppConstants.NEW_GAME_BUTTON_HEIGHT,
                 AppConstants.OPTIONS_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE
+                AppConstants.BUTTON_NEW_GAME_IMAGE,
+                false
         );
         Button btnContribuidores = UIButtonFactory.createButtonWithCenteredText(
                 AppConstants.NEW_GAME_BUTTON_WIDTH,
                 AppConstants.NEW_GAME_BUTTON_HEIGHT,
                 AppConstants.CONTRIBUTORS_TEXT,
-                AppConstants.BUTTON_NEW_GAME_IMAGE
+                AppConstants.BUTTON_NEW_GAME_IMAGE,
+                true
         );
 
         btnNuevaPartida.setOnAction(e -> onNuevaPartida.run());
@@ -57,27 +58,35 @@ public class MainMenuView {
         btnOpciones.setOnAction(e -> System.out.println("Opciones - pendiente"));
         btnContribuidores.setOnAction(e -> onContribuidores.run());
 
-        VBox mainButtons = new VBox(15, titulo, btnNuevaPartida, btnCargarPartida, btnOpciones, btnContribuidores);
+        VBox mainButtons = new VBox(15);
         mainButtons.setAlignment(Pos.CENTER);
         mainButtons.setStyle("-fx-background-color: transparent; -fx-padding: 20;");
+
+        Region spacer = new Region();
+        spacer.setPrefHeight(400); // Ajusta la altura según necesites
+
+        mainButtons.getChildren().addAll(spacer, btnNuevaPartida, btnCargarPartida, btnOpciones, btnContribuidores);
 
         Button btnDiscord = UIButtonFactory.createImageButton(
                 AppConstants.SOCIAL_BUTTON_SIZE,
                 AppConstants.SOCIAL_BUTTON_SIZE,
                 AppConstants.DISCORD_ICON,
-                "Únete a Discord"
+                "Únete a Discord",
+                true
         );
         Button btnTwitter = UIButtonFactory.createImageButton(
                 AppConstants.SOCIAL_BUTTON_SIZE,
                 AppConstants.SOCIAL_BUTTON_SIZE,
                 AppConstants.YOUTUBE_ICON,
-                "Síguenos en Twitter"
+                "Síguenos en Youtube",
+                true
         );
         Button btnGitHub = UIButtonFactory.createImageButton(
                 AppConstants.SOCIAL_BUTTON_SIZE,
                 AppConstants.SOCIAL_BUTTON_SIZE,
                 AppConstants.GITHUB_ICON,
-                "GitHub del proyecto"
+                "GitHub del proyecto",
+                true
         );
 
         btnDiscord.setOnAction(e -> BrowserUtil.abrirUrl(AppConstants.DISCORD_INVITE_URL));

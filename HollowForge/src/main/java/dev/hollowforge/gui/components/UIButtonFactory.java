@@ -9,7 +9,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
 import java.io.InputStream;
 
 public class UIButtonFactory {
@@ -18,7 +19,7 @@ public class UIButtonFactory {
     private static final double FONT_SIZE_LARGE = 20;
     private static final double FONT_SIZE_SMALL = 14;
 
-    public static Button createButtonWithCenteredText(double prefWidth, double prefHeight, String text, String imagePath) {
+    public static Button createButtonWithCenteredText(double prefWidth, double prefHeight, String text, String imagePath, boolean hoverActive) {
         Button button = new Button();
         button.setPrefWidth(prefWidth);
         button.setPrefHeight(prefHeight);
@@ -26,7 +27,7 @@ public class UIButtonFactory {
         if (imagePath == null || imagePath.isEmpty()) {
             button.setText(text);
             button.setFont(FontLoader.getMinecraftFont(FONT_SIZE_SMALL));
-            button.setStyle("-fx-text-fill: white; -fx-background-color: #4a4a4a; -fx-background-radius: 5;");
+            button.setStyle("-fx-text-fill: #562B05; -fx-background-color: #4a4a4a; -fx-background-radius: 5;");
             return button;
         }
 
@@ -48,8 +49,8 @@ public class UIButtonFactory {
             textLabel.setWrapText(true);
             textLabel.setAlignment(Pos.CENTER);
             textLabel.setMaxWidth(prefWidth * 0.8);
-            textLabel.setFont(FontLoader.getMinecraftFont(FONT_SIZE_LARGE));
-            textLabel.setStyle("-fx-text-fill: white;");
+            textLabel.setFont(FontLoader.getMinecraftFont(FONT_SIZE_LARGE,"/fonts/MinecraftBold-nMK1.otf"));
+            textLabel.setStyle("-fx-text-fill: #562B05;");
 
             StackPane stackPane = new StackPane();
             stackPane.getChildren().addAll(imageView, textLabel);
@@ -64,10 +65,28 @@ public class UIButtonFactory {
             button.setFont(FontLoader.getMinecraftFont(FONT_SIZE_SMALL));
             button.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white;");
         }
+
+        if(hoverActive) {
+            // Crear transiciones de escala suaves
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), button);
+            scaleUp.setToX(1.1);
+            scaleUp.setToY(1.1);
+            scaleUp.setCycleCount(1);
+            scaleUp.setAutoReverse(false);
+
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), button);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.setCycleCount(1);
+            scaleDown.setAutoReverse(false);
+
+            button.setOnMouseEntered(e -> scaleUp.playFromStart());
+            button.setOnMouseExited(e -> scaleDown.playFromStart());
+        }
         return button;
     }
 
-    public static Button createButton(double prefWidth, double prefHeight, String text, String unused) {
+    public static Button createButton(double prefWidth, double prefHeight, String text) {
         Button button = new Button(text);
         button.setPrefWidth(prefWidth);
         button.setPrefHeight(prefHeight);
@@ -76,7 +95,7 @@ public class UIButtonFactory {
         return button;
     }
 
-    public static Button createImageButton(double width, double height, String imagePath, String tooltipText) {
+    public static Button createImageButton(double width, double height, String imagePath, String tooltipText, boolean hoverActive) {
         Button button = new Button();
         button.setPrefWidth(width);
         button.setPrefHeight(height);
@@ -90,7 +109,7 @@ public class UIButtonFactory {
             Image image = new Image(is);
             ImageView imageView = new ImageView(image);
 
-            // Cálculo de viewPort para cubrir el área sin deformar
+            // Cálculo de viewPort (igual que tenías)
             double imgWidth = image.getWidth();
             double imgHeight = image.getHeight();
             double targetWidth = width;
@@ -112,15 +131,24 @@ public class UIButtonFactory {
                 Tooltip.install(button, new Tooltip(tooltipText));
             }
 
-            // Efecto hover
-            button.setOnMouseEntered(e -> {
-                button.setScaleX(1.1);
-                button.setScaleY(1.1);
-            });
-            button.setOnMouseExited(e -> {
-                button.setScaleX(1.0);
-                button.setScaleY(1.0);
-            });
+            if(hoverActive) {
+                // Crear transiciones de escala suaves
+                ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), button);
+                scaleUp.setToX(1.1);
+                scaleUp.setToY(1.1);
+                scaleUp.setCycleCount(1);
+                scaleUp.setAutoReverse(false);
+
+                ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), button);
+                scaleDown.setToX(1.0);
+                scaleDown.setToY(1.0);
+                scaleDown.setCycleCount(1);
+                scaleDown.setAutoReverse(false);
+
+                button.setOnMouseEntered(e -> scaleUp.playFromStart());
+                button.setOnMouseExited(e -> scaleDown.playFromStart());
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             button.setStyle("-fx-background-color: #4a4a4a;");

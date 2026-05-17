@@ -1,57 +1,37 @@
 package dev.hollowforge.gui.components;
 
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 
 public class VideoBackground extends StackPane {
-    private MediaPlayer mediaPlayer;
+    private ImageView imageView;
 
-    /**
-     * @param videoResourcePath ruta dentro de resources, ej: "/videos/background.mp4"
-     * @param blurRadius        radio del desenfoque (píxeles)
-     */
-    public VideoBackground(String videoResourcePath, double blurRadius) {
+    public VideoBackground(String imageResourcePath, double blurRadius) {
         try {
-            var resource = getClass().getResource(videoResourcePath);
-            if (resource == null) {
-                System.err.println("Video no encontrado en recursos: " + videoResourcePath);
-                setStyle("-fx-background-color: #1e1e1e;");
-                return;
-            }
-            String uri = resource.toExternalForm();
-            Media media = new Media(uri);
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            mediaPlayer.setMute(true);   // silenciado para no molestar
-            mediaPlayer.setAutoPlay(true);
-
-            MediaView mediaView = new MediaView(mediaPlayer);
-            mediaView.setPreserveRatio(false);
-            mediaView.setSmooth(true);
+            var resource = getClass().getResource(imageResourcePath);
+            if (resource == null) throw new RuntimeException("Recurso no encontrado: " + imageResourcePath);
+            Image image = new Image(resource.toExternalForm());
+            imageView = new ImageView(image);
+            imageView.setPreserveRatio(false);
+            imageView.setSmooth(true);
             if (blurRadius > 0) {
-                mediaView.setEffect(new BoxBlur(blurRadius, blurRadius, 3));
+                imageView.setEffect(new BoxBlur(blurRadius, blurRadius, 3));
             }
-            getChildren().add(mediaView);
-            widthProperty().addListener((obs, old, newVal) -> mediaView.setFitWidth(getWidth()));
-            heightProperty().addListener((obs, old, newVal) -> mediaView.setFitHeight(getHeight()));
-            mediaPlayer.setOnReady(() -> {
-                mediaView.setFitWidth(getWidth());
-                mediaView.setFitHeight(getHeight());
-            });
+            getChildren().add(imageView);
+            // Ajustar al tamaño del contenedor
+            widthProperty().addListener((obs, old, newVal) -> imageView.setFitWidth(getWidth()));
+            heightProperty().addListener((obs, old, newVal) -> imageView.setFitHeight(getHeight()));
+            imageView.setFitWidth(getWidth());
+            imageView.setFitHeight(getHeight());
         } catch (Exception e) {
-            System.err.println("Error al cargar/reproducir el video: " + e.getMessage());
-            e.printStackTrace();
-            setStyle("-fx-background-color: #1e1e1e;");
+            System.err.println("Error cargando imagen: " + e.getMessage());
+            setStyle("-fx-background-color: black;");
         }
     }
 
     public void dispose() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-        }
+        // No es necesario liberar recursos
     }
 }

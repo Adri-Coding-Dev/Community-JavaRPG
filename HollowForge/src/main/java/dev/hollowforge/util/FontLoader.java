@@ -21,4 +21,20 @@ public class FontLoader {
         }
         return Font.font(minecraftFont.getFamily(), size);
     }
+
+    public static Font getMinecraftFont(double size, String font) {
+        if (minecraftFont == null) {
+            try (InputStream is = FontLoader.class.getResourceAsStream(font)) {
+                if (is == null) {
+                    System.err.println("Fuente no encontrada, usando fuente por defecto");
+                    return Font.font("System", size);
+                }
+                minecraftFont = Font.loadFont(is, size);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Font.font("System", size);
+            }
+        }
+        return Font.font(minecraftFont.getFamily(), size);
+    }
 }

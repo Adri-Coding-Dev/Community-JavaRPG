@@ -1,8 +1,8 @@
-// Fichero: MainApp.java
 package dev.hollowforge.app;
 
 import dev.hollowforge.navigation.SceneManager;
 import dev.hollowforge.service.GitHubService;
+import dev.hollowforge.util.AppConstants;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.stage.Stage;
@@ -13,9 +13,6 @@ import javafx.stage.Stage;
  * Extiende Application, por lo que JavaFX lo lanza automáticamente.
  */
 public class MainApp extends Application {
-
-    private static final String TITULO_VENTANA = "HollowForge";
-
     /**
      * Método principal de JavaFX donde se construye la interfaz.
      *
@@ -23,7 +20,7 @@ public class MainApp extends Application {
      */
     @Override
     public void start(Stage stage) {
-        stage.setTitle(TITULO_VENTANA);
+        stage.setTitle(AppConstants.GAME_NAME);
 
         // Servicios compartidos entre las diferentes vistas
         HostServices hostServices = getHostServices(); // Servicio para abrir URLs desde JavaFX
