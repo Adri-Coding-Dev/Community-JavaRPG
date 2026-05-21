@@ -1,44 +1,33 @@
 package dev.hollowforge.app;
 
+import dev.hollowforge.audio.AudioManager;
 import dev.hollowforge.navigation.SceneManager;
 import dev.hollowforge.service.GitHubService;
 import dev.hollowforge.util.AppConstants;
+import dev.hollowforge.util.LogManager;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.stage.Stage;
 
-/**
- * Punto de entrada de HollowForge.
- * Configura el escenario principal y los servicios compartidos.
- * Extiende Application, por lo que JavaFX lo lanza automáticamente.
- */
 public class MainApp extends Application {
-    /**
-     * Método principal de JavaFX donde se construye la interfaz.
-     *
-     * @param stage escenario principal proporcionado por JavaFX
-     */
+
     @Override
     public void start(Stage stage) {
         stage.setTitle(AppConstants.GAME_NAME);
+        HostServices hostServices = getHostServices();
+        GitHubService gitHubService = new GitHubService();
+        AudioManager audioManager = new AudioManager();
 
-        // Servicios compartidos entre las diferentes vistas
-        HostServices hostServices = getHostServices(); // Servicio para abrir URLs desde JavaFX
-        GitHubService gitHubService = new GitHubService(); // Servicio para llamadas a la API de GitHub
+        boolean musicStarted = audioManager.playMusic(AppConstants.MUSIC_MENU, 1000);
+        if (!musicStarted) {
+            LogManager.warning("No se pudo reproducri la musica, verifica el estado del archivo.");
+        }
 
-        // Gestor de escenas que controla la navegación
-        SceneManager sceneManager = new SceneManager(stage, hostServices, gitHubService);
-
-        // Muestra el menú principal como primera pantalla
+        SceneManager sceneManager = new SceneManager(stage, hostServices, gitHubService, audioManager);
         sceneManager.mostrarMenuPrincipal();
-        stage.show(); // Hace visible la ventana
+        stage.show();
     }
 
-    /**
-     * Método main tradicional, lanza la aplicación JavaFX.
-     *
-     * @param args argumentos de línea de comandos
-     */
     public static void main(String[] args) {
         launch(args);
     }

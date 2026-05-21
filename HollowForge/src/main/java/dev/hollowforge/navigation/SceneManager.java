@@ -1,89 +1,93 @@
-// Fichero: SceneManager.java
 package dev.hollowforge.navigation;
 
+import dev.hollowforge.audio.AudioManager;
+import dev.hollowforge.game.GameController;
 import dev.hollowforge.service.GitHubService;
 import dev.hollowforge.gui.ContributorsView;
 import dev.hollowforge.gui.MainMenuView;
+import dev.hollowforge.gui.OptionsView;
+import dev.hollowforge.util.AppConstants;
+import dev.hollowforge.util.LogManager;
 import javafx.application.HostServices;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- * Administra la navegación entre las diferentes vistas de la aplicación.
- * Mantiene referencias a los servicios compartidos y al Stage principal.
- * Es el encargado de cambiar la escena actual de la ventana.
- */
 public class SceneManager {
-
     private final Stage stage;
     private final HostServices hostServices;
     private final GitHubService gitHubService;
+    private final AudioManager audioManager;
+    private GameController gameController;
+    private String currentMusic;
 
-    // Dimensiones base de las ventanas (pueden cambiar según la vista)
     private static final int ANCHO_MENU = 400;
     private static final int ALTO_MENU = 350;
     private static final int ANCHO_CONTRIB = 500;
     private static final int ALTO_CONTRIB = 450;
+    private static final int ANCHO_JUEGO = 800;
+    private static final int ALTO_JUEGO = 600;
+    private static final int ANCHO_OPCIONES = 400;   // Igual que el menú principal
+    private static final int ALTO_OPCIONES = 350;    // Igual que el menú principal
 
-    /**
-     * Constructor.
-     *
-     * @param stage          escenario principal de la aplicación
-     * @param hostServices   servicio para abrir enlaces web
-     * @param gitHubService  servicio para obtener datos de GitHub
-     */
-    public SceneManager(Stage stage, HostServices hostServices, GitHubService gitHubService) {
+    public SceneManager(Stage stage, HostServices hostServices, GitHubService gitHubService, AudioManager audioManager) {
         this.stage = stage;
         this.hostServices = hostServices;
         this.gitHubService = gitHubService;
+        this.audioManager = audioManager;
+        this.currentMusic = AppConstants.MUSIC_MENU;
     }
 
-    /**
-     * Muestra el menú principal.
-     * Crea una instancia de MainMenuView y configura la escena con tamaño base.
-     */
     public void mostrarMenuPrincipal() {
+        if (gameController != null) {
+            gameController.shutdown();
+            gameController = null;
+        }
+        if (!AppConstants.MUSIC_MENU.equals(currentMusic)) {
+            audioManager.switchMusic(AppConstants.MUSIC_MENU, 300, 500);
+            currentMusic = AppConstants.MUSIC_MENU;
+        }
         MainMenuView mainMenuView = new MainMenuView(
                 hostServices,
                 this::iniciarJuego,
-                this::mostrarContribuidores   // callback para ir a la vista de contribuidores
+                this::mostrarContribuidores,
+                this::mostrarOpciones,
+                audioManager
         );
         cambiarEscena(mainMenuView.getRoot(), ANCHO_MENU, ALTO_MENU);
     }
 
-    /**
-     * Muestra la vista de contribuidores.
-     * Crea una instancia de ContributorsView y configura la escena con un tamaño mayor (500x450)
-     * para dar más espacio a las tarjetas.
-     */
     public void mostrarContribuidores() {
         ContributorsView contributorsView = new ContributorsView(
                 hostServices,
                 gitHubService,
-                this::mostrarMenuPrincipal    // callback para volver al menú
+                this::mostrarMenuPrincipal
         );
         cambiarEscena(contributorsView.getRoot(), ANCHO_CONTRIB, ALTO_CONTRIB);
     }
 
-    private void iniciarJuego(){
-        //TODO -> Implementar logica del juego (crear escena, GameLoop, etc)
-        System.out.println("[DEBUG]: Iniciar juego - Pendiente de implementacion");
-        //Mostramos el menu para no romper la navegacion (por ahora)
-        mostrarMenuPrincipal();
+    public void mostrarOpciones() {
+        OptionsView optionsView = new OptionsView(audioManager, this::mostrarMenuPrincipal, stage);
+        cambiarEscena(optionsView, ANCHO_OPCIONES, ALTO_OPCIONES);
     }
 
-    /**
-     * Cambia la escena actual del Stage.
-     * Crea una nueva Scene con el nodo raíz y las dimensiones indicadas,
-     * la asigna al Stage y centra la ventana en la pantalla.
-     *
-     * @param root  nodo raíz de la nueva vista
-     * @param ancho ancho de la escena
-     * @param alto  alto de la escena
-     */
+    private void iniciarJuego() {
+        LogManager.info("Iniciando nueva partida");
+        if (gameController != null) {
+            gameController.shutdown();
+        }
+        currentMusic = AppConstants.MUSIC_GAME;
+        gameController = new GameController(audioManager, stage, this::mostrarMenuPrincipal);
+        gameController.start();
+        Scene scene = new Scene(gameController.getView(), ANCHO_JUEGO, ALTO_JUEGO);
+        gameController.setupKeyboard(scene);
+        stage.setScene(scene);
+        stage.centerOnScreen();
+    }
+
     private void cambiarEscena(javafx.scene.Parent root, int ancho, int alto) {
         Scene scene = new Scene(root, ancho, alto);
         stage.setScene(scene);
-        stage.centerOnScreen(); // Centra la ventana para mejor experiencia de usuario
+        stage.centerOnScreen();
+        LogManager.info("Escena Cambiada a: " + root.getClass().getSimpleName());
     }
 }

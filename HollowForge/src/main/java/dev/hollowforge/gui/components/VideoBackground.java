@@ -1,5 +1,6 @@
 package dev.hollowforge.gui.components;
 
+import dev.hollowforge.util.LogManager;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,7 +27,7 @@ public class VideoBackground extends StackPane {
             imageView.setFitWidth(getWidth());
             imageView.setFitHeight(getHeight());
         } catch (Exception e) {
-            System.err.println("Error cargando imagen: " + e.getMessage());
+            LogManager.severe("Error al cargar la imagen: " + e.getMessage());
             setStyle("-fx-background-color: black;");
         }
     }

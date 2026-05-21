@@ -1,10 +1,12 @@
 package dev.hollowforge.gui;
 
+import dev.hollowforge.audio.AudioManager;
 import dev.hollowforge.gui.components.UIButtonFactory;
 import dev.hollowforge.gui.components.VideoBackground;
 import dev.hollowforge.util.AppConstants;
 import dev.hollowforge.util.BrowserUtil;
 import dev.hollowforge.util.FontLoader;
+import dev.hollowforge.util.LogManager;
 import javafx.application.HostServices;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -18,30 +20,20 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-/**
- * Menú principal con botones de navegación y redes sociales.
- * Los botones de redes sociales tienen un cartel informativo permanente debajo.
- */
 public class MainMenuView {
-
     private final StackPane root;
-
-    // Altura del espaciador superior para bajar los botones (ajustar según gusto)
     private static final double PREF_SPACER_HEIGHT = 350;
 
-    public MainMenuView(HostServices hostServices, Runnable onNuevaPartida, Runnable onContribuidores) {
+    public MainMenuView(HostServices hostServices, Runnable onNuevaPartida, Runnable onContribuidores, Runnable onOpciones, AudioManager audioManager) {
         root = new StackPane();
-
         try {
-            // Fondo de vídeo (con fallback interno)
             VideoBackground videoBackground = new VideoBackground(AppConstants.VIDEO_BACKGROUND, 0);
-            // Botones principales
             Button btnNuevaPartida = UIButtonFactory.createButtonWithCenteredText(
                     AppConstants.NEW_GAME_BUTTON_WIDTH,
                     AppConstants.NEW_GAME_BUTTON_HEIGHT,
                     AppConstants.NEW_GAME_TEXT,
                     AppConstants.BUTTON_NEW_GAME_IMAGE,
-                    false
+                    true
             );
             Button btnCargarPartida = UIButtonFactory.createButtonWithCenteredText(
                     AppConstants.NEW_GAME_BUTTON_WIDTH,
@@ -55,7 +47,7 @@ public class MainMenuView {
                     AppConstants.NEW_GAME_BUTTON_HEIGHT,
                     AppConstants.OPTIONS_TEXT,
                     AppConstants.BUTTON_NEW_GAME_IMAGE,
-                    false
+                    true
             );
             Button btnContribuidores = UIButtonFactory.createButtonWithCenteredText(
                     AppConstants.NEW_GAME_BUTTON_WIDTH,
@@ -66,35 +58,27 @@ public class MainMenuView {
             );
 
             btnNuevaPartida.setOnAction(e -> onNuevaPartida.run());
-            btnCargarPartida.setOnAction(e -> System.out.println("Cargar partida - pendiente"));
-            btnOpciones.setOnAction(e -> System.out.println("Opciones - pendiente"));
+            btnCargarPartida.setOnAction(e -> LogManager.warning("Boton cargar partida accionado - No implementado todavia"));
+            btnOpciones.setOnAction(e -> onOpciones.run());  // ahora llama al callback
             btnContribuidores.setOnAction(e -> onContribuidores.run());
 
-            // Contenedor de botones principales
             VBox mainButtons = new VBox(15, btnNuevaPartida, btnCargarPartida, btnOpciones, btnContribuidores);
             mainButtons.setAlignment(Pos.CENTER);
             mainButtons.setStyle("-fx-background-color: transparent; -fx-padding: 20;");
 
-            // --- Sección de redes sociales con carteles fijos debajo ---
             HBox socialBox = new HBox(50);
             socialBox.setAlignment(Pos.CENTER);
             socialBox.setStyle("-fx-padding: 10 0 20 0;");
 
-            // Cargar imagen del cartel (común para todos)
             Image cartelImg = null;
             try {
                 String cartelPath = "/assets/ui/socials/CartelToolTip.png";
                 var is = getClass().getResourceAsStream(cartelPath);
-                if (is != null) {
-                    cartelImg = new Image(is);
-                } else {
-                    System.err.println("Advertencia: No se encontró la imagen del cartel en " + cartelPath);
-                }
+                if (is != null) cartelImg = new Image(is);
             } catch (Exception e) {
                 System.err.println("Error cargando cartel: " + e.getMessage());
             }
 
-            // Datos de cada red social: icono, texto, URL
             Object[][] redes = {
                     {AppConstants.DISCORD_ICON, "Únete a Discord", AppConstants.DISCORD_INVITE_URL},
                     {AppConstants.YOUTUBE_ICON, "Síguenos en YouTube", AppConstants.YOUTUBE_URL},
@@ -137,18 +121,15 @@ public class MainMenuView {
                 socialBox.getChildren().add(item);
             }
 
-            // ---- Espaciador para bajar todos los botones ----
             Region spacer = new Region();
             spacer.setPrefHeight(PREF_SPACER_HEIGHT);
 
-            // Contenedor principal con el espaciador arriba
             VBox uiContainer = new VBox(spacer, mainButtons, socialBox);
             uiContainer.setAlignment(Pos.TOP_CENTER);
             uiContainer.setStyle("-fx-background-color: transparent;");
 
             root.getChildren().addAll(videoBackground, uiContainer);
-            StackPane.setAlignment(uiContainer, Pos.TOP_CENTER); // Anclado arriba para que el espaciador empuje hacia abajo
-
+            StackPane.setAlignment(uiContainer, Pos.TOP_CENTER);
         } catch (Exception e) {
             System.err.println("Error en MainMenuView: " + e.getMessage());
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package dev.hollowforge.service;
 
 import dev.hollowforge.model.Contributor;
+import dev.hollowforge.util.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -64,11 +65,11 @@ public class GitHubService {
 
         // Si hay caché y no ha expirado, devolver copia defensiva
         if (cachedContributors != null && (ahora - lastFetchTime) < CACHE_TTL_MS) {
-            System.out.println("[GitHubService] Usando caché de contribuidores");
+            LogManager.info("Usando Caché de contribuidores");
             return new ArrayList<>(cachedContributors); // copia inmutable para el exterior
         }
 
-        System.out.println("[GitHubService] Caché expirada o vacía. Realizando petición a GitHub...");
+        LogManager.info("Caché expirada o vacía. Realizando peticion a GitHub");
         List<Contributor> contributors = fetchFromGitHub();
 
         // Actualizar caché
@@ -110,8 +111,7 @@ public class GitHubService {
             int contributions = obj.getInt("contributions");
             contributors.add(new Contributor(login, avatarUrl, htmlUrl, contributions));
         }
-
-        System.out.println("[GitHubService] Obtenidos " + contributors.size() + " contribuidores desde la API.");
+        LogManager.info("Obtenidos " + contributors.size() + " contribuidores desde la API");
         return contributors;
     }
 
@@ -122,7 +122,7 @@ public class GitHubService {
     public void clearCache() {
         cachedContributors = null;
         lastFetchTime = 0;
-        System.out.println("[GitHubService] Caché limpiada manualmente.");
+        LogManager.info("Caché limpiada manualmente");
     }
 
     /**

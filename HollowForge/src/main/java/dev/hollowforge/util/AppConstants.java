@@ -15,10 +15,12 @@ public final class AppConstants {
     public static final String FONT_MINECRAFT = FONTS_DIR + "HollowForgeMinecraftRegular.otf"; // o .ttf
 
 
-    public static final String VIDEO_BACKGROUND = "/background/MainScreen.png";
+    public static final String VIDEO_BACKGROUND = "/assets/ui/background/MainScreen.png";
 
     public static final String UI_BUTTONS_DIR = "/assets/ui/buttons/";
     public static final String BUTTON_NEW_GAME_IMAGE = UI_BUTTONS_DIR + "ButtonsBeginTexture.png";
+
+    public static final String MENU_OPTIONS_IMAGE = UI_BUTTONS_DIR + "OptionsMenu.png";
 
     public static final String SOCIAL_IMAGES_DIR = "/assets/ui/socials/";
     public static final String DISCORD_ICON = SOCIAL_IMAGES_DIR + "DiscordLogo.png";
@@ -49,4 +51,9 @@ public final class AppConstants {
     public static final String TOOLTIP_YOUTUBE_TEXT = "Síguenos en Youtube";
 
     public static final String TOOLTIP_IMAGE = "/assets/ui/socials/CartelToolTip.png";
+
+    // ============= CANCIONES =================== \\
+    public static final String AUDIO_DIR = "/assets/audio/";
+    public static final String MUSIC_MENU = AUDIO_DIR + "HollowForgeMainTheme.wav";
+    public static final String MUSIC_GAME = AUDIO_DIR + "HollowForgeCaveTheme.wav";
 }
