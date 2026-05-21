@@ -1,97 +1,211 @@
 # ARQUITECTURA
----
-
-## 🧠 Justificación
-
-### 🧼 Clean Architecture (reglas del juego)
-Se encarga de la lógica de negocio del juego, completamente independiente del motor o la implementación técnica.
-
-- Reglas de gameplay
-- Progresión del jugador
-- Economía / misiones
-- Lógica independiente del framework
-
-👉 Beneficio: alta testabilidad y bajo acoplamiento.
 
 ---
 
-### 🎮 ECS (Entity Component System)
-Responsable de la simulación en tiempo real del mundo del juego.
+## Visión general
 
-- Movimiento
-- Colisiones
-- IA básica
-- Gestión masiva de entidades
+HollowForge utiliza una **arquitectura híbrida por capas** que combina Clean Architecture, ECS (Entity Component System) y Data-Oriented Design para lograr un equilibrio entre mantenibilidad, testabilidad y rendimiento en tiempo real.
 
-👉 Beneficio: alto rendimiento y escalabilidad.
-
----
-
-### ⚡ Data-Oriented Design (DOD)
-Capa orientada a maximizar el rendimiento del sistema.
-
-- Optimización de memoria (cache-friendly)
-- Procesamiento en lote
-- Reducción de overhead de objetos
-
-👉 Beneficio: mejor uso de CPU y rendimiento en tiempo real.
-
----
-
-### 🧱 Engine Layer
-Capa inferior encargada de la ejecución técnica.
-
-Ejemplos: :contentReference[oaicite:0]{index=0}, :contentReference[oaicite:1]{index=1} o engines personalizados.
-
-- Rendering
-- Física
-- Audio
-- Input
-- Networking
+```
+┌─────────────────────────────────────────────────────┐
+│                    app/ (entry point)               │
+├─────────────────────────────────────────────────────┤
+│                  presentation/                      │
+│              (UI del juego, vistas, menús)          │
+├─────────────────────────────────────────────────────┤
+│              engine/ (runtime del juego)            │
+│    audio · core · game · navigation · rendering     │
+├───────────────────┬─────────────────────────────────┤
+│     domain/       │        ecs/                     │
+│  (reglas negocio) │  (simulación en tiempo real)    │
+│                   │  component/ · system/ · core/   │
+├───────────────────┴─────────────────────────────────┤
+│           infrastructure/                           │
+│      external/ (GitHub, APIs) · logging/            │
+├─────────────────────────────────────────────────────┤
+│               shared/ (utilidades genéricas)        │
+└─────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 🚀 Ventaja de este enfoque híbrido
+## Capas del sistema
 
-- Separación clara de responsabilidades
-- Escalabilidad para proyectos grandes
-- Alto rendimiento en runtime
-- Flexibilidad para cambiar motor o subsistemas
-- Mejor mantenibilidad a largo plazo
+### 🧼 Domain — Clean Architecture
 
----
+Reglas de negocio del juego, completamente independientes del motor y la infraestructura.
 
-## ⚠️ Nota importante
+| Paquete | Contenido | Ejemplos |
+|---------|----------|----------|
+| `domain/entity/` | Entidades del dominio | `PlayerStats`, `Inventory`, `Quest` |
+| `domain/usecase/` | Casos de uso | `ApplyDamage`, `LevelUp` |
 
-Este enfoque no implica una separación estricta en capas físicas obligatorias, sino una **separación conceptual de responsabilidades**, que puede adaptarse según el tamaño y complejidad del proyecto.
-
-## 🎮 Arquitectura híbrida de videojuego (AAA)
-
-| Capa | Propósito | Contenido principal | Ejemplos |
-|------|----------|---------------------|----------|
-| 🧼 Clean Architecture | Reglas del juego / dominio | Use Cases, Domain Entities | ApplyDamage, LevelUp, PlayerStats, Inventory, Quest |
-| 🎮 ECS Layer | Simulación en tiempo real | Components + Systems | Position, Velocity, Health, Damage, MovementSystem, CombatSystem, AISystem |
-| ⚡ Data-Oriented Design (DOD) | Optimización de rendimiento | Arrays y procesamiento en lote | positions[], velocities[], health[] |
-| 🧱 Engine Layer | Ejecución del juego | Sistemas base del motor | Rendering, Physics, Audio, Input, Networking (Unity / Unreal) |
+**Reglas:**
+- ✅ Sin dependencias hacia engine, ECS, presentation ni infrastructure
+- ✅ Solo usa Java estándar (sin JavaFX)
+- ✅ 100% testable
 
 ---
 
-## 🧠 Flujo simplificado
+### 🎮 ECS — Entity Component System
 
-| Paso | Descripción |
-|------|------------|
-| 1 | Clean Architecture define reglas del juego |
-| 2 | ECS ejecuta la simulación en tiempo real |
-| 3 | DOD optimiza memoria y CPU |
-| 4 | Engine renderiza y ejecuta el juego |
+Simulación del mundo del juego en tiempo real.
+
+| Paquete | Contenido | Ejemplos |
+|---------|----------|----------|
+| `ecs/component/` | Componentes de datos | `Position`, `Velocity`, `Health`, `Damage` |
+| `ecs/system/` | Sistemas de lógica | `MovementSystem`, `CombatSystem`, `AISystem` |
+| `ecs/core/` | Infraestructura de storage | `EntityArray`, `ComponentChunk` (DOD) |
+
+**Reglas:**
+- ✅ Components: solo datos, sin lógica
+- ✅ Systems: solo lógica, sin estado
+- ✅ `ecs/core/` implementa patrones Data-Oriented Design (arrays planos, cache-friendly)
+- ❌ No depende de domain ni engine
 
 ---
 
-## 🚀 Versión resumida
+### 🧱 Engine — Runtime
 
-| Nivel | Responsabilidad |
-|------|----------------|
-| Clean Architecture | lógica del juego |
-| ECS | simulación |
-| DOD | rendimiento |
-| Engine | ejecución |
+Ejecución técnica del juego. Capa que orquesta el ciclo de vida de la aplicación.
+
+| Paquete | Contenido |
+|---------|----------|
+| `engine/audio/` | Reproducción de música y efectos (`AudioManager`) |
+| `engine/config/` | Constantes globales (`AppConstants`) |
+| `engine/core/` | Bucle principal del juego (`GameLoop`) |
+| `engine/game/` | Controlador del estado de juego (`GameController`) |
+| `engine/navigation/` | Gestión de escenas y navegación (`SceneManager`) |
+| `engine/rendering/` | Renderizado de la vista de juego (`GameView`) |
+
+**Reglas:**
+- ✅ Depende de `domain` y `ecs` (consume reglas de negocio y simulación)
+- ✅ Depende de `infrastructure` (logging)
+- ✅ Depende de `presentation` (carga vistas UI)
+- ❌ No contiene lógica de negocio ni UI directamente
+
+---
+
+### 🖥 Presentation — Interfaz de Usuario
+
+Vistas, menús y componentes visuales construidos con JavaFX.
+
+| Paquete | Contenido |
+|---------|----------|
+| `presentation/ui/` | Pantallas del juego |
+| `presentation/ui/components/` | Componentes reutilizables |
+
+**Clases:**
+- `MainMenuView` — menú principal con botones y redes sociales
+- `OptionsView` — configuración de volumen
+- `ContributorsView` — lista de contribuidores desde GitHub
+- `PauseMenu` — menú de pausa durante la partida
+- `UIButtonFactory` — fábrica de botones con textura
+- `ImageBackground` — fondo de pantalla estático
+- `FontLoader` — carga de fuentes personalizadas
+
+**Reglas:**
+- ✅ Depende de `engine` (audio, config) y `infrastructure`
+- ❌ No contiene lógica de negocio
+
+---
+
+### 🔌 Infrastructure — Integraciones Externas
+
+Servicios de IO, logging y APIs externas.
+
+| Paquete | Contenido |
+|---------|----------|
+| `infrastructure/external/github/` | Integración con GitHub API |
+| `infrastructure/external/github/dto/` | DTOs de GitHub |
+| `infrastructure/logging/` | Sistema de logs |
+
+**Clases:**
+- `GitHubService` — cliente HTTP para la API de contribuidores
+- `Contributor` — DTO con datos de un contribuidor
+- `LogManager` — logger con salida a consola y archivo
+
+---
+
+### 📦 Shared — Utilidades Genéricas
+
+Código transversal sin capa específica.
+
+| Paquete | Contenido |
+|---------|----------|
+| `shared/util/` | Utilidades genéricas |
+| `shared/dto/` | DTOs compartidos (reservado para futuro) |
+
+**Clases:**
+- `BrowserUtil` — apertura de URLs en navegador del sistema
+
+---
+
+## Reglas de dependencias entre capas
+
+```
+app ───→ engine ───→ domain
+  │         │            │
+  │         ├──→ ecs ────┘
+  │         │
+  │         └──→ presentation ───→ infrastructure
+  │                                      │
+  └──────────────────────────────────────┘
+                         ↓
+                      shared (visible a todas)
+```
+
+| Desde | Hacia | Dirección |
+|-------|-------|-----------|
+| `domain` | — | Independiente (raíz) |
+| `ecs` | — | Independiente (raíz) |
+| `engine` | `domain`, `ecs`, `presentation`, `infrastructure` | ↓ (consume) |
+| `presentation` | `engine`, `infrastructure`, `shared` | ↓ (consume) |
+| `infrastructure` | `shared` | ↓ (consume) |
+| `shared` | — | Transversal (todos pueden usar) |
+
+---
+
+## Flujo de inicio de la aplicación
+
+```
+MainApp.main()
+  └─ launch()
+      └─ MainApp.start(stage)
+          ├─ Crea GitHubService
+          ├─ Crea AudioManager
+          │   └─ Inicia música del menú
+          ├─ Crea SceneManager
+          └─ sceneManager.mostrarMenuPrincipal()
+              ├─ Crea MainMenuView
+              └─ Cambia escena (Scene)
+```
+
+---
+
+## Stack tecnológico
+
+| Área | Tecnología | Versión |
+|------|-----------|---------|
+| Lenguaje | Java | 25 |
+| UI/Render | JavaFX | 25.0.2 |
+| Build | Maven | 3.x |
+| HTTP Client | java.net.http | (JDK estándar) |
+| JSON | org.json | 20231013 |
+| Logging | java.util.logging | (JDK estándar) |
+| Control de versiones | Git | — |
+
+---
+
+## Atajos de ejecución
+
+```bash
+# Compilar
+cd src/
+mvn clean compile
+
+# Ejecutar
+mvn javafx:run
+```
+
+Clase principal: `dev.hollowforge.app.MainApp`

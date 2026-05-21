@@ -2,71 +2,83 @@
 
 ---
 
-# ⚙️ Fase 0 — Fundación
+## ⚙️ Fase 0 — Fundación
 
-Objetivos:
+| Objetivo | Estado |
+|----------|--------|
+| Configuración Maven | ✅ Completado |
+| Ventana JavaFX | ✅ Completado |
+| Game loop | ✅ Completado |
+| Input system | ⏳ Esqueleto (solo teclado ESC) |
+| Render básico | ✅ Completado (escenas JavaFX) |
+| Cámara | ❌ Pendiente |
+| Asset loader | ✅ Completado (recursos embedidos) |
+| Arquitectura por capas | ✅ Completado |
+| Menú principal | ✅ Completado |
+| Menú de opciones | ✅ Completado |
+| Vista de contribuidores | ✅ Completado |
+| Audio (música) | ✅ Completado |
 
-* Configuración Maven
-* Ventana JavaFX
-* Game loop
-* Input system
-* Render básico
-* Cámara
-* Asset loader
-
-Estado:
-
-> En desarrollo
-
----
-
-# 🌍 Fase 1 — Mundo Base
-
-Objetivos:
-
-* Tiles
-* Generación procedural
-* Movimiento
-* Colisiones
-* Cámara dinámica
+> **Estado:** ~85% completado
 
 ---
 
-# ⚔️ Fase 2 — Gameplay Principal
+## 🌍 Fase 1 — Mundo Base
 
-Objetivos:
+| Objetivo | Estado |
+|----------|--------|
+| Tiles | ❌ Pendiente |
+| Generación procedural | ❌ Pendiente |
+| Movimiento del jugador | ❌ Pendiente |
+| Colisiones | ❌ Pendiente |
+| Cámara dinámica | ❌ Pendiente |
+| ECS integrado con GameLoop | ❌ Pendiente |
 
-* Inventario
-* Vida
-* Enemigos
-* Combate
-* Día/Noche
-
----
-
-# ⛏️ Fase 3 — Sandbox
-
-Objetivos:
-
-* Minería
-* Construcción
-* Crafting
-* Recursos
+> **Estado:** No iniciado
 
 ---
 
-# 🧩 Fase 4 — Mods
+## ⚔️ Fase 2 — Gameplay Principal
 
-Objetivos:
+| Objetivo | Estado |
+|----------|--------|
+| Inventario | 🟡 Entidad creada, sin UI |
+| Vida / daño | 🟡 Componentes ECS creados, sin integración |
+| Enemigos | ❌ Pendiente |
+| Combate | 🟡 Caso de uso ApplyDamage creado, sin loop |
+| Ciclo día/noche | ❌ Pendiente |
 
-* Resource packs
-* Configs externas
-* Mod loader
-* Override de assets
+> **Estado:** Entidades de dominio y ECS creadas, sin integración en el bucle de juego
 
 ---
 
-# 🚀 Futuro
+## ⛏️ Fase 3 — Sandbox
+
+| Objetivo | Estado |
+|----------|--------|
+| Minería | ❌ Pendiente |
+| Construcción | ❌ Pendiente |
+| Crafting | ❌ Pendiente |
+| Recursos | ❌ Pendiente |
+
+> **Estado:** No iniciado
+
+---
+
+## 🧩 Fase 4 — Mods
+
+| Objetivo | Estado |
+|----------|--------|
+| Resource packs | ❌ Pendiente |
+| Configs externas | ❌ Pendiente |
+| Mod loader | ❌ Pendiente |
+| Override de assets | ❌ Pendiente |
+
+> **Estado:** No iniciado
+
+---
+
+## 🚀 Futuro
 
 Posibles ideas futuras:
 
@@ -75,3 +87,14 @@ Posibles ideas futuras:
 * servidores dedicados,
 * IA avanzada,
 * biomas complejos.
+
+---
+
+## Leyenda
+
+| Símbolo | Significado |
+|---------|-------------|
+| ✅ | Completado |
+| 🟡 | Parcial (estructura lista, falta integración) |
+| ⏳ | En desarrollo |
+| ❌ | Pendiente / No iniciado |
