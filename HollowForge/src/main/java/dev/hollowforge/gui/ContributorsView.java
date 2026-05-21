@@ -5,6 +5,7 @@ import dev.hollowforge.model.Contributor;
 import dev.hollowforge.service.GitHubService;
 import dev.hollowforge.util.AppConstants;
 import dev.hollowforge.util.FontLoader;
+import dev.hollowforge.util.LogManager;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -71,7 +72,7 @@ public class ContributorsView {
 
         // ---------- Fondo con imagen y desenfoque ----------
         ImageView fondo = new ImageView();
-        String fondoPath = "/background/MainScreen.png"; // Ruta de la imagen de fondo
+        String fondoPath = "/assets/ui/background/MainScreen.png"; // Ruta de la imagen de fondo
         try {
             var fondoResource = getClass().getResource(fondoPath);
             if (fondoResource != null) {
@@ -89,7 +90,7 @@ public class ContributorsView {
                 root.setStyle("-fx-background-color: #1e1e1e;");
             }
         } catch (Exception e) {
-            System.err.println("Error cargando fondo: " + e.getMessage());
+            LogManager.warning("Error al cargar el fondo: " + e.getMessage());
             root.setStyle("-fx-background-color: #1e1e1e;");
         }
         if (fondo.getImage() != null) {

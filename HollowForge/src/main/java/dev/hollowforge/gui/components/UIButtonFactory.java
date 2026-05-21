@@ -198,4 +198,64 @@ public class UIButtonFactory {
         }
         return button;
     }
+
+    public static Button createButtonWithCenteredText(double prefWidth, double prefHeight, String text, String imagePath, boolean hoverActive, double fontSize) {
+        Button button = new Button();
+        button.setPrefWidth(prefWidth);
+        button.setPrefHeight(prefHeight);
+
+        if (imagePath == null || imagePath.isEmpty()) {
+            button.setText(text);
+            button.setFont(FontLoader.getMinecraftFont(fontSize));
+            button.setStyle("-fx-text-fill: #562B05; -fx-background-color: #4a4a4a; -fx-background-radius: 5;");
+            return button;
+        }
+
+        try (InputStream is = UIButtonFactory.class.getResourceAsStream(imagePath)) {
+            if (is == null) {
+                System.err.println("[ERROR] No se encontró la imagen: " + imagePath);
+                button.setText(text);
+                button.setFont(FontLoader.getMinecraftFont(fontSize));
+                button.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white;");
+                return button;
+            }
+            Image image = new Image(is);
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(prefWidth);
+            imageView.setFitHeight(prefHeight);
+            imageView.setPreserveRatio(false);
+
+            Label textLabel = new Label(text);
+            textLabel.setWrapText(true);
+            textLabel.setAlignment(Pos.CENTER);
+            textLabel.setMaxWidth(prefWidth * 0.8);
+            textLabel.setFont(FontLoader.getMinecraftFont(fontSize, "/fonts/MinecraftBold-nMK1.otf"));
+            textLabel.setStyle("-fx-text-fill: #562B05;");
+
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().addAll(imageView, textLabel);
+            stackPane.setPrefSize(prefWidth, prefHeight);
+
+            button.setGraphic(stackPane);
+            button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            button.setStyle("-fx-background-color: transparent;");
+        } catch (Exception e) {
+            e.printStackTrace();
+            button.setText(text);
+            button.setFont(FontLoader.getMinecraftFont(fontSize));
+            button.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: white;");
+        }
+
+        if (hoverActive) {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), button);
+            scaleUp.setToX(1.1);
+            scaleUp.setToY(1.1);
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), button);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            button.setOnMouseEntered(e -> scaleUp.playFromStart());
+            button.setOnMouseExited(e -> scaleDown.playFromStart());
+        }
+        return button;
+    }
 }
