@@ -85,7 +85,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>dev.hollowforge.app.MainApp</mainClass>
+                    <mainClass>dev.hollowforge.MainApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

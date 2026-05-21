@@ -1,10 +1,10 @@
 package dev.hollowforge.app;
 
-import dev.hollowforge.audio.AudioManager;
-import dev.hollowforge.navigation.SceneManager;
-import dev.hollowforge.service.GitHubService;
-import dev.hollowforge.util.AppConstants;
-import dev.hollowforge.util.LogManager;
+import dev.hollowforge.engine.audio.AudioManager;
+import dev.hollowforge.engine.config.AppConstants;
+import dev.hollowforge.engine.navigation.SceneManager;
+import dev.hollowforge.infrastructure.external.github.GitHubService;
+import dev.hollowforge.infrastructure.logging.LogManager;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.stage.Stage;
